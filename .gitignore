@@ -1,0 +1,8 @@
+__pycache__/
+.ipynb_checkpoints/
+*.log
+/Metadata.json
+/raw.txt
+/cleaned.txt
+/notebook_executed.ipynb
+/plots.png
