@@ -1,7 +1,9 @@
 *.npy
 *.pt
-*.pyc
 __pycache__/
-notebook_executed.ipynb
-notebook_final.ipynb
-plots/
+*.pyc
+nlp_env/
+venv/
+cleaned.txt
+raw.txt
+*.zip
