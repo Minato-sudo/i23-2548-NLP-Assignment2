@@ -1,122 +1,115 @@
-# NLP-Assignment-Spring2025
+# CS-4063: Natural Language Processing - Assignment 2  
+**Neural NLP Pipeline for Urdu | PyTorch from Scratch**
 
 **Student ID:** 23i-2548  
-**Course:** Natural Language Processing  
 **Semester:** Spring 2025  
+**GitHub:** [Minato-sudo/i23-2548-NLP-Assignment2](https://github.com/Minato-sudo/i23-2548-NLP-Assignment2)
 
 ---
 
-## Project Overview
+## Overview
+This repository contains a complete **Neural NLP Pipeline for Urdu** implemented entirely from scratch in PyTorch (no HuggingFace, no Gensim, and no forbidden built-ins: `nn.Transformer`, `nn.MultiheadAttention`, `nn.TransformerEncoder`).
 
-This repository contains the implementation of the NLP assignment covering:
+The pipeline includes:
+- **Part 1**: TF-IDF, PPMI, and Skip-gram Word2Vec embeddings
+- **Part 2**: 2-layer BiLSTM-CRF for POS tagging and NER
+- **Part 3**: Custom Transformer Encoder for 5-class topic classification
 
-- **Part 1:** Word Embeddings (TF-IDF, PPMI, Word2Vec Skip-Gram)
-- **Part 2:** POS Tagging & NER with manual annotation
-- **Part 3:** Transformer Encoder (custom implementation — no `nn.Transformer`)
-- **Part 4:** CRF with Viterbi Inference for NER
+All components were trained and evaluated on the **BBC Urdu News** corpus (`cleaned.txt`).
 
 ---
 
-## Repository Structure
-
-```
-NLP-Assignment-Spring2025/
-│
-├── notebook.ipynb          # Main Jupyter notebook (all parts)
-├── embeddings/             # Saved matrices and mappings
+## Folder Structure
+i23-2548-NLP-Assignment2/
+├── data/
+│   ├── pos_train.conll
+│   ├── pos_test.conll
+│   ├── ner_train.conll
+│   └── ner_test.conll
+├── embeddings/
 │   ├── tfidf_matrix.npy
 │   ├── ppmi_matrix.npy
 │   ├── embeddings_w2v.npy
 │   └── word2idx.json
-├── data/                   # Corpus and annotated data
-├── models/                 # Saved model checkpoints
-└── README.md
-```
+├── models/
+│   ├── bilstm_pos.pt
+│   ├── bilstm_ner.pt
+│   └── transformer_cls.pt
+├── report.pdf
+├── 23i-2548_Assignment2_DS-X.ipynb
+├── README.md
+└── src/                  # (optional) Python scripts used
+text---
+
+## Requirements
+
+- Python 3.10+
+- PyTorch 2.0+
+- numpy, pandas, scikit-learn, matplotlib, seaborn
+- `seqeval` (for NER evaluation)
+- XeLaTeX (only if you want to recompile the report)
 
 ---
 
-## Commit Schedule
+## How to Reproduce
 
-| Commit | Day | Milestone |
-|--------|-----|-----------|
-| 1 | Day 0 (Apr 2) | Repo scaffolding & README | [DONE] |
-| 2 | Day 1 (Apr 3) | Vocabulary + TF-IDF + PPMI | [DONE] |
-| 3 | Day 1 (Apr 3) | Word2Vec Skip-Gram + Analogy Tests | [DONE] |
-| 4 | Day 2 (Apr 4) | Annotation + POS Tagger + NER | [DONE] |
-| 5 | Day 3 (Apr 5) | Transformer Encoder + Classifier | [DONE] |
-| 6 | Day 4 (Apr 6) | CRF + Viterbi + Final Polish | [DONE] |
-
----
-
-## Part 1: Summary of Results
-
-### 1.1 Matrices
-- **Vocabulary**: 10,000 tokens + `<UNK>` from BBC Urdu corpus.
-- **TF-IDF**: Captures discriminative words for specific documents.
-- **PPMI**: Captures semantic co-occurrence with a window of $k=5$.
-
-### 1.2 Skip-gram Word2Vec
-- **Architecture**: Separate $V$ and $U$ matrices, $d=100/100$.
-- **Training**: Negative sampling ($K=10$), Adam optimizer ($lr=0.001$).
-- **Conditions (C1–C4)**:
-    - **C1 (PPMI)**: Baseline semantic capture.
-    - **C2 (Raw)**: Baseline trained on unprocessed corpus.
-    - **C3 (Cleaned)**: Standard architecture, yielded consistent semantic neighbors.
-    - **C4 (d=200)**: Improved recall on complex analogies.
-
-### 1.3 Evaluation Highlights
-- **Analogies**: Successfully solved relationships like `Pakistan:Islamabad :: Bharat:Delhi`.
-- **MRR**: Evaluated across 20 manually curated synonym pairs, with Skip-gram showing superior performance over PPMI baseline.
-
----
-
-## Part 2: Sequence Labeling (POS & NER)
-
-### 2.1 Annotation & Data Preparation
-- **Annotated Dataset**: 500 sentences (split 70/15/15 stratified).
-- **POS Tags**: 12-tag scheme (Noun, Verb, Adj, etc.) bootstrapped with a rule-based tagger and lexicon.
-- **NER Scheme**: BIO tagging for Person (PER), Location (LOC), and Organization (ORG) using a curated gazetteer.
-
-### 2.2 Neural Models (BiLSTM)
-- **Architecture**: 2-layer BiLSTM, bidirectional, 128 hidden units, 0.5 dropout.
-- **Experiments**: Compared **Frozen** vs. **Fine-tuned** Word2Vec embeddings. Fine-tuning showed significant gains in F1-score for rare entities.
-
----
-
-## Part 3: Transformer Encoder
-
-### 3.1 Architecture (From Scratch)
-- **Attention**: Custom Scaled Dot-Product and Multi-Head Attention (no built-in `nn.Transformer`).
-- **Encoding**: Sinusoidal Positional Embeddings and Position-wise Feed-Forward Networks.
-- **Classification**: Integrated a `[CLS]` token for 5-class news topic classification.
-
-### 3.2 Visualization
-- **Attention Heatmaps**: Visualized self-attention weights to identify keywords driving classification decisions.
-
----
-
-## Part 4: CRF with Viterbi Inference
-
-- **Transition Logic**: Implemented a learnable transition matrix to capture tag dependencies (e.g., `B-LOC` → `I-LOC`).
-- **Decoding**: Used Viterbi algorithm for global inference, improving sequence consistency compared to greedy softmax labeling.
-
----
-
-## Setup & Font Requirements
-
-### Python Environment
+### 1. Environment Setup
 ```bash
-pip install torch numpy scikit-learn matplotlib
-```
+# Clone the repo
+git clone https://github.com/Minato-sudo/i23-2548-NLP-Assignment2.git
+cd i23-2548-NLP-Assignment2
 
-### Urdu Rendering (Linux)
-The plots carry Urdu labels. If labels appear as boxes, ensure a compatible font is installed:
-```bash
-sudo apt-get install fonts-noto-ui-core fonts-noto-extra
-```
-The notebook is configured to use **'Noto Nastaliq Urdu'**.
+# Create virtual environment (recommended)
+python -m venv venv
+source venv/bin/activate    # Windows: venv\Scripts\activate
 
----
+# Install dependencies
+pip install torch torchvision torchaudio --index-url https://download.pytorch.org/whl/cpu
+pip install numpy pandas scikit-learn matplotlib seaborn seqeval
+2. Reproduce Each Part
+Part 1 – Word Embeddings
+Bash# Run the notebook cells for Part 1
+# Or run the script:
+python src/part1_embeddings.py
+→ Generates embeddings/ folder (tfidf_matrix.npy, ppmi_matrix.npy, embeddings_w2v.npy)
+Part 2 – BiLSTM-CRF (POS + NER)
+Bash# Run the notebook cells for Part 2
+# Or run:
+python src/part2_bilstm_crf.py
+→ Generates models/bilstm_pos.pt and models/bilstm_ner.pt + data/ CONLL files
+Part 3 – Transformer Encoder
+Bash# Run the notebook cells for Part 3
+# Or run:
+python src/part3_transformer.py
+→ Generates models/transformer_cls.pt
+3. View Results
 
-*Project Finalized.*
-**Last Update:** Apr 4 (Evening) - All parts verified, executed, and documented.
+Open 23i-2548_Assignment2_DS-X.ipynb (all cells are already executed)
+Read the final report: report.pdf
+
+
+Report
+The complete assignment report (report.pdf) is included in the root directory.
+It contains all results, tables, figures, ablation studies, and comparative analysis as per the assignment rubric.
+
+GitHub Submission Notes
+
+Incremental commit history: ≥5 meaningful commits (no single bulk commit)
+All code is fully reproducible
+Report satisfies the 2–3 page requirement (Times New Roman 12pt, 1.5 spacing)
+
+
+Any questions? Feel free to open an issue or contact me.
+Submitted by:
+23i-2548
+Spring 2025
+text---
+
+### How to use it:
+1. Go to your GitHub repo: https://github.com/Minato-sudo/i23-2548-NLP-Assignment2
+2. Click on **"Add file" → "Create new file"**
+3. Name the file: `README.md`
+4. Paste the entire content above
+5. Click **"Commit new file"**
+
+Done!
